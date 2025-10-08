@@ -1,0 +1,64 @@
+getgenv().dist = 300
+getgenv().abc = true
+
+function checkposition()
+    for i, v in pairs(game:GetService("Workspace").Island8.Kitchen:GetChildren()) do
+        if v:IsA("Folder") and v:FindFirstChild("JuicingBowl") then
+            return v:FindFirstChild("JuicingBowl").Bowl
+        end
+
+    end
+end
+
+local function activetool()
+    for i, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+        if string.find(v.Name, "Juice") or string.find(v.Name, "Milk") then
+            v:Activate()
+        end
+    end
+end
+
+local function autodrink()
+    for i, v in pairs(game.Players.LocalPlayer.Backpack:GetDescendants()) do
+        if string.find(v.Name, "Juice") or string.find(v.Name, "Milk") then
+            game.Players.LocalPlayer.Character.Humanoid:EquipTool(v)
+            task.wait(0.1)
+            activetool()
+        end
+    end
+end
+function teleportfarmclick()
+    for i, v in pairs(game:GetService("Workspace").Island8.Kitchen:GetDescendants()) do
+        if v.Name == "ClickDetector" then
+         game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(
+                checkposition().Position)
+            task.wait(0.1)
+            fireclickdetector(v)
+        end
+    end
+end
+
+function teleportfarm()
+    local hp = game.Players.LocalPlayer.Character.HumanoidRootPart
+
+    for i, v in pairs(game:GetService("Workspace").Barrels:GetDescendants()) do
+        if v.Name == "Barrel" or v.Name == "Crate" then
+            if math.floor((checkposition().Position - v.Position).Magnitude) < getgenv().dist then
+                hp.CFrame = v.CFrame
+                task.wait(0.5)
+                fireclickdetector(v.ClickDetector)
+                task.wait(0.5)
+            end
+        end
+    end
+end
+
+while getgenv().abc do
+    task.wait()
+    task.spawn(function()
+        autodrink()
+    end)
+    teleportfarm()
+    wait(0.1)
+    teleportfarmclick()
+end
